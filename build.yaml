@@ -24,3 +24,12 @@ include:
   - board: gamma_dongle
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+  - board: gamma_left
+    shield: settings_reset
+    artifact-name: gamma_left_settings_reset
+  - board: gamma_right
+    shield: settings_reset
+    artifact-name: gamma_right_settings_reset
+  - board: gamma_dongle
+    shield: settings_reset
+    artifact-name: gamma_dongle_settings_reset
