@@ -18,3 +18,6 @@
 #     artifact-name: corne_left_with_studio
 #
 ---
+include:
+  - board: gamma_left
+  - board: gamma_right
