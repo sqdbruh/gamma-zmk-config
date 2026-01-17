@@ -1,0 +1,88 @@
+# Planck keyboard configuration
+
+# Copyright (c) 2020 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+if BOARD_GAMMA_DONGLE
+    config ZMK_SPLIT_ROLE_CENTRAL
+        default y
+
+    config ZMK_USB
+        default y
+endif
+
+if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT
+    config ZMK_SPLIT_ROLE_CENTRAL
+        default n
+endif
+
+if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT || BOARD_GAMMA_DONGLE
+
+config ZMK_BLE
+	default y
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "gamma"
+
+config BOARD
+    default "gamma"
+
+# Enable I2C and sensor support
+config I2C
+    default y
+
+config SENSOR
+    default y
+
+if USB
+
+config USB_NRFX
+    default y
+
+config USB_DEVICE_STACK
+    default y
+
+endif # USB
+
+config BT_CTLR
+    default BT
+
+endif # BOARD_GAMMA
+
+
+# if BOARD_GAMMA_LEFT
+
+# 	config ZMK_KEYBOARD_NAME
+# 	default "Gamma"
+
+# endif # BOARD_GAMMA_LEFT
+
+
+# if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT
+
+# config BOARD
+# 	default "gamma"
+
+# config ZMK_SPLIT
+# 	default y
+
+# config BT_CTLR
+# 	default BT
+
+
+# config ZMK_USB
+# 	default y
+
+# if USB
+
+# config USB_NRFX
+# 	default y
+
+# config USB_DEVICE_STACK
+# 	default y
+
+# endif # USB
+
+# endif # BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT

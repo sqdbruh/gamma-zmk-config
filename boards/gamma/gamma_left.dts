@@ -4,12 +4,3 @@
 
 #include "gamma.dtsi"
 #include "gamma_left-pinctrl.dtsi"
-
-&kscan {
-    // Replace these comments with the GPIO pins in the matrix for the left side.
-    // See https://zmk.dev/docs/development/hardware-integration/new-shield#shield-overlays
-    col-gpios
-        = <&gpio0 0 GPIO_ACTIVE_HIGH>
-        , <&gpio0 0 GPIO_ACTIVE_HIGH>
-        ;
-};

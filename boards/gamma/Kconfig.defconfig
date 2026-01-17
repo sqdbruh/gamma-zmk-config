@@ -2,17 +2,28 @@
 # See https://docs.zephyrproject.org/4.1.0/hardware/porting/board_porting.html#write-kconfig-files
 # for more information.
 
-if BOARD_GAMMA_LEFT
+if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT
+
+config ZMK_BLE
+    default y
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+config ZMK_SPLIT_ROLE_PERIPHERAL
+    default y
 
 config ZMK_KEYBOARD_NAME
     default "gamma"
 
-config ZMK_SPLIT_ROLE_CENTRAL
+config I2C
     default y
 
-endif # BOARD_GAMMA_LEFT
-
-if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT
+config SENSOR
+    default y
 
 if USB
 

@@ -1,0 +1,12 @@
+file_format: "1"
+id: gamma
+name: Gamma
+type: keyboard
+arch: arm
+features:
+  - keys
+outputs:
+  - usb
+  - ble
+url: https://nicekeyboards.com/nice-nano
+
