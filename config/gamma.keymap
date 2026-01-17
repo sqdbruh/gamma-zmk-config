@@ -27,7 +27,6 @@
     behaviors {
         sw_lang: sw_lang {
             compatible = "zmk,behavior-macro";
-            label = "SW_LANG";
             #binding-cells = <0>;
 
             bindings = <

@@ -1,14 +1,8 @@
-# Enable MPU
-CONFIG_ARM_MPU=y
-
 # Enable GPIO
 CONFIG_GPIO=y
 
 # Enable pinctrl
 CONFIG_PINCTRL=y
-
-# Place application at &code_partition address
-CONFIG_USE_DT_CODE_PARTITION=y
 
 # Generate a .uf2 firmware image
 CONFIG_BUILD_OUTPUT_UF2=y
@@ -35,9 +29,6 @@ CONFIG_ZMK_SPLIT=y
 CONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
 CONFIG_ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS=2
 CONFIG_ZMK_SLEEP=n
-
-# BLE TX power boost
-CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 
 # PWM LEDs
 CONFIG_PWM=y
