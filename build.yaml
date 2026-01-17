@@ -22,3 +22,5 @@ include:
   - board: gamma_left
   - board: gamma_right
   - board: gamma_dongle
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
