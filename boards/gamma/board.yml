@@ -8,3 +8,8 @@ boards:
     vendor: gamma
     socs:
       - name: nrf52840
+
+  - name: gamma_dongle
+    vendor: gamma
+    socs:
+      - name: nrf52840

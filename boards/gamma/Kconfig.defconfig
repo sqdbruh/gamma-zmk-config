@@ -33,3 +33,29 @@ config USB_DEVICE_STACK
 endif # USB
 
 endif # BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT
+
+if BOARD_GAMMA_DONGLE
+
+config ZMK_BLE
+    default y
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "gamma"
+
+if USB
+
+config USB_NRFX
+    default y
+
+config USB_DEVICE_STACK
+    default y
+
+endif # USB
+
+endif # BOARD_GAMMA_DONGLE
