@@ -10,5 +10,9 @@ manifest:
     - name: zmk
       remote: zmkfirmware
       import: app/west.yml
+    - name: gamma-zmk-config
+      url: https://github.com/sqdbruh/gamma-zmk-config
+      revision: main
+      path: modules/gamma-zmk-config
   self:
     path: config
