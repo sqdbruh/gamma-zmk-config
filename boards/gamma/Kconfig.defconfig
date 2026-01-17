@@ -13,9 +13,6 @@ config ZMK_SPLIT
 config ZMK_SPLIT_ROLE_CENTRAL
     default n
 
-config ZMK_SPLIT_ROLE_PERIPHERAL
-    default y
-
 config ZMK_KEYBOARD_NAME
     default "gamma"
 
@@ -34,8 +31,5 @@ config USB_DEVICE_STACK
     default y
 
 endif # USB
-
-config BT_CTLR
-    default BT
 
 endif # BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT

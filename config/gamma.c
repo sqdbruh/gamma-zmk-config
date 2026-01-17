@@ -183,6 +183,7 @@ static void enable_led_power(bool enable) {
         k_msleep(10); // Give the LED power time to stabilize
 
         if (device_is_ready(spi_dev)) {
+#if IS_ENABLED(CONFIG_PM_DEVICE)
             int ret = pm_device_action_run(spi_dev, PM_DEVICE_ACTION_RESUME);
             if (ret < 0) {
                 LOG_ERR("Failed to resume SPI3: %d", ret);
@@ -190,13 +191,16 @@ static void enable_led_power(bool enable) {
             }
             k_msleep(10); // Give SPI time to initialize
             LOG_INF("SPI3 resumed successfully");
+#endif
         }
     } else {
         if (device_is_ready(spi_dev)) {
+#if IS_ENABLED(CONFIG_PM_DEVICE)
             int ret = pm_device_action_run(spi_dev, PM_DEVICE_ACTION_SUSPEND);
             if (ret < 0) {
                 LOG_ERR("Failed to suspend SPI3: %d", ret);
             }
+#endif
         }
         gpio_pin_set_dt(&led_enable, false);
     }
