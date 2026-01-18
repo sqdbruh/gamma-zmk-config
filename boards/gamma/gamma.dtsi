@@ -128,8 +128,6 @@ zephyr_udc0: &usbd {
 
         reg = <0>;
         spi-max-frequency = <4000000>;
-        bits-per-symbol = <8>;
-
         chain-length = <11>;
         spi-one-frame = <0x70>;
         spi-zero-frame = <0x40>;
