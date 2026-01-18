@@ -9,4 +9,12 @@ config GAMMA_LED_TEST
     help
       Enable simple LED strip test that lights all LEDs white on boot.
 
+config GAMMA_LED_PROBE
+    bool "Gamma LED data probe"
+    default n
+    select GPIO
+    depends on !GAMMA_LED_TEST
+    help
+      Toggle the LED data pin (P0.24) for probing with a multimeter.
+
 endmenu

@@ -1,0 +1,43 @@
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/init.h>
+#include <zephyr/kernel.h>
+
+#if IS_ENABLED(CONFIG_GAMMA_LED_PROBE)
+
+#define PROBE_PIN 24
+#define PROBE_PORT DT_NODELABEL(gpio0)
+
+static const struct device *const gpio0 = DEVICE_DT_GET(PROBE_PORT);
+static const struct gpio_dt_spec led_enable =
+    GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_enable), gpios, {0});
+
+static bool probe_state;
+
+static void gamma_probe_timer_handler(struct k_timer *timer) {
+    ARG_UNUSED(timer);
+    probe_state = !probe_state;
+    (void)gpio_pin_set(gpio0, PROBE_PIN, probe_state);
+}
+
+K_TIMER_DEFINE(gamma_probe_timer, gamma_probe_timer_handler, NULL);
+
+static int gamma_led_probe_init(void) {
+    if (!device_is_ready(gpio0)) {
+        return 0;
+    }
+
+    if (device_is_ready(led_enable.port)) {
+        gpio_pin_configure_dt(&led_enable, GPIO_OUTPUT_ACTIVE);
+        k_msleep(10);
+    }
+
+    gpio_pin_configure(gpio0, PROBE_PIN, GPIO_OUTPUT_INACTIVE);
+    k_timer_start(&gamma_probe_timer, K_SECONDS(5), K_SECONDS(5));
+    return 0;
+}
+
+SYS_INIT(gamma_led_probe_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+
+#endif
