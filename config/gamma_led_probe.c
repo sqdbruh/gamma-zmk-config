@@ -6,22 +6,16 @@
 
 #if IS_ENABLED(CONFIG_GAMMA_LED_PROBE)
 
-#define PROBE_PIN 24
-#define PROBE_PORT DT_NODELABEL(gpio0)
+#define PROBE0_PIN 24
+#define PROBE1_PIN 22
+#define PROBE2_PIN 0
 
-static const struct device *const gpio0 = DEVICE_DT_GET(PROBE_PORT);
+static const struct device *const gpio0 = DEVICE_DT_GET(DT_NODELABEL(gpio0));
+static const struct device *const gpio1 = DEVICE_DT_GET(DT_NODELABEL(gpio1));
 static const struct gpio_dt_spec led_enable =
     GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_enable), gpios, {0});
 
 static bool probe_state;
-
-static void gamma_probe_timer_handler(struct k_timer *timer) {
-    ARG_UNUSED(timer);
-    probe_state = !probe_state;
-    (void)gpio_pin_set(gpio0, PROBE_PIN, probe_state);
-}
-
-K_TIMER_DEFINE(gamma_probe_timer, gamma_probe_timer_handler, NULL);
 
 static int gamma_led_probe_init(void) {
     if (!device_is_ready(gpio0)) {
@@ -33,11 +27,24 @@ static int gamma_led_probe_init(void) {
         k_msleep(10);
     }
 
-    gpio_pin_configure(gpio0, PROBE_PIN, GPIO_OUTPUT_INACTIVE);
-    k_timer_start(&gamma_probe_timer, K_SECONDS(5), K_SECONDS(5));
+    gpio_pin_configure(gpio0, PROBE0_PIN, GPIO_OUTPUT_INACTIVE);
+    gpio_pin_configure(gpio0, PROBE1_PIN, GPIO_OUTPUT_INACTIVE);
+    if (device_is_ready(gpio1)) {
+        gpio_pin_configure(gpio1, PROBE2_PIN, GPIO_OUTPUT_INACTIVE);
+    }
+    while (true) {
+        probe_state = !probe_state;
+        (void)gpio_pin_set(gpio0, PROBE0_PIN, probe_state);
+        (void)gpio_pin_set(gpio0, PROBE1_PIN, probe_state);
+        if (device_is_ready(gpio1)) {
+            (void)gpio_pin_set(gpio1, PROBE2_PIN, probe_state);
+        }
+        k_busy_wait(5000000);
+    }
+
     return 0;
 }
 
-SYS_INIT(gamma_led_probe_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+SYS_INIT(gamma_led_probe_init, PRE_KERNEL_1, 0);
 
 #endif

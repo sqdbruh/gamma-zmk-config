@@ -1,5 +1,6 @@
 name: gamma-zmk-config
 build:
+  cmake: config
   settings:
     board_root: .
   kconfig: config/Kconfig
