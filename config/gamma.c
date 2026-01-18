@@ -1,4 +1,5 @@
 #ifndef CONFIG_BOARD_GAMMA_DONGLE
+#if !IS_ENABLED(CONFIG_GAMMA_LED_TEST)
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -673,4 +674,5 @@ ZMK_SUBSCRIPTION(gamma_ble_listener, zmk_endpoint_changed);
 #endif
 
 SYS_INIT(gamma_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+#endif
 #endif

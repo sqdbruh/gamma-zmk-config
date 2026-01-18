@@ -1,0 +1,9 @@
+menu "Gamma options"
+
+config GAMMA_LED_TEST
+    bool "Gamma LED test"
+    default n
+    help
+      Enable simple LED strip test that lights all LEDs white on boot.
+
+endmenu
