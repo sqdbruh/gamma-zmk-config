@@ -1,33 +1,24 @@
-#include <zephyr/device.h>
-#include <zephyr/devicetree.h>
-#include <zephyr/drivers/gpio.h>
+#include <hal/nrf_gpio.h>
 #include <zephyr/init.h>
 #include <zephyr/kernel.h>
 
 #if IS_ENABLED(CONFIG_GAMMA_LED_PROBE)
 
-#define PROBE0_PIN 4
-#define PROBE1_PIN 7
-
-static const struct device *const gpio0 = DEVICE_DT_GET(DT_NODELABEL(gpio0));
-static const struct gpio_dt_spec led_enable =
-    GPIO_DT_SPEC_GET_OR(DT_NODELABEL(led_enable), gpios, {0});
+#define PROBE0_PIN NRF_GPIO_PIN_MAP(0, 4)
+#define PROBE1_PIN NRF_GPIO_PIN_MAP(0, 7)
+#define LED_GATE_PIN NRF_GPIO_PIN_MAP(0, 6)
 
 static int gamma_led_probe_init(void) {
-    if (!device_is_ready(gpio0)) {
-        return 0;
-    }
+    nrf_gpio_cfg_output(LED_GATE_PIN);
+    nrf_gpio_pin_set(LED_GATE_PIN);
 
-    if (device_is_ready(led_enable.port)) {
-        gpio_pin_configure_dt(&led_enable, GPIO_OUTPUT_ACTIVE);
-        k_msleep(10);
-    }
-
-    gpio_pin_configure(gpio0, PROBE0_PIN, GPIO_OUTPUT_ACTIVE);
-    gpio_pin_configure(gpio0, PROBE1_PIN, GPIO_OUTPUT_ACTIVE);
+    nrf_gpio_cfg_output(PROBE0_PIN);
+    nrf_gpio_cfg_output(PROBE1_PIN);
+    nrf_gpio_pin_set(PROBE0_PIN);
+    nrf_gpio_pin_set(PROBE1_PIN);
     return 0;
 }
 
-SYS_INIT(gamma_led_probe_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+SYS_INIT(gamma_led_probe_init, PRE_KERNEL_1, 0);
 
 #endif
