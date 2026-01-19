@@ -28,10 +28,10 @@ include:
     cmake-args: -DCONFIG_GAMMA_LED_TEST=y
     artifact-name: gamma_right_led_test
   - board: gamma_left
-    cmake-args: -DCONFIG_GAMMA_LED_PROBE=y -DCONFIG_SPI=n -DCONFIG_LED_STRIP=n -DCONFIG_WS2812_STRIP_SPI=n
+    cmake-args: -DCONFIG_GAMMA_LED_PROBE=y -DCONFIG_SPI=n -DCONFIG_LED_STRIP=n -DCONFIG_WS2812_STRIP_SPI=n -DCONFIG_I2C=n -DCONFIG_SENSOR=n
     artifact-name: gamma_left_led_probe
   - board: gamma_right
-    cmake-args: -DCONFIG_GAMMA_LED_PROBE=y -DCONFIG_SPI=n -DCONFIG_LED_STRIP=n -DCONFIG_WS2812_STRIP_SPI=n
+    cmake-args: -DCONFIG_GAMMA_LED_PROBE=y -DCONFIG_SPI=n -DCONFIG_LED_STRIP=n -DCONFIG_WS2812_STRIP_SPI=n -DCONFIG_I2C=n -DCONFIG_SENSOR=n
     artifact-name: gamma_right_led_probe
   - board: gamma_dongle
     snippet: studio-rpc-usb-uart
