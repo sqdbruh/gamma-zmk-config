@@ -92,6 +92,12 @@
     pinctrl-names = "default", "sleep";
 };
 
+#if defined(CONFIG_GAMMA_LED_PROBE)
+&i2c0 {
+    status = "disabled";
+};
+#endif
+
 &adc {
     status = "okay";
 };
@@ -107,6 +113,17 @@
 &gpio1 {
     status = "okay";
 };
+
+#if defined(CONFIG_GAMMA_LED_PROBE)
+&gpio0 {
+    gamma_probe_hog: gamma_probe_hog {
+        gpio-hog;
+        gpios = <4 GPIO_ACTIVE_HIGH>, <7 GPIO_ACTIVE_HIGH>;
+        output-high;
+        line-name = "gamma-probe";
+    };
+};
+#endif
 
 zephyr_udc0: &usbd {
     status = "okay";
