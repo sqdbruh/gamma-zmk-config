@@ -1,6 +1,6 @@
 name: gamma-zmk-config
 build:
-  cmake: config
+  cmake: zephyr
   settings:
     board_root: .
-  kconfig: config/Kconfig
+  kconfig: zephyr/Kconfig
