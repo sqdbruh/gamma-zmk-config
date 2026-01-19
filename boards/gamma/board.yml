@@ -2,14 +2,14 @@ boards:
   - name: gamma_left
     vendor: gamma
     socs:
-      - name: nrf52840
+      - name: nrf52840_qiaa
 
   - name: gamma_right
     vendor: gamma
     socs:
-      - name: nrf52840
+      - name: nrf52840_qiaa
 
   - name: gamma_dongle
     vendor: gamma
     socs:
-      - name: nrf52840
+      - name: nrf52840_qiaa
