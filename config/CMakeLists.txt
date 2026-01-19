@@ -15,8 +15,8 @@ if (CONFIG_GAMMA_LED_PROBE)
         add_custom_target(gamma_marker_check ALL
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/verify_marker.py
                     ${CMAKE_BINARY_DIR} ${GAMMA_PROBE_MARKER}
-            DEPENDS zephyr
             VERBATIM
         )
+        add_dependencies(gamma_marker_check zephyr)
     endif()
 endif()
