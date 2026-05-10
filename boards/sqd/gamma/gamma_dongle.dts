@@ -3,6 +3,18 @@
 #include "gamma.dtsi"
 
 / {
+	chosen {
+		/*
+		 * gamma.dtsi sets zephyr,console = &cdc_acm_uart so log output
+		 * flows over USB serial. On the dongle, ZMK_USB_LOGGING is off
+		 * and printk via CDC-ACM can stall if the host hasn't
+		 * enumerated yet. Drop the console so printk goes nowhere.
+		 */
+		/delete-property/ zephyr,console;
+		/* No battery on the dongle. */
+		/delete-property/ zmk,battery;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 		led0_green: led_0 {
@@ -57,6 +69,16 @@
         = <&gpio0 31 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
         ;
 };
+
+/*
+ * The dongle hardware has no WS2812 strip, no I2C peripherals, and no
+ * VBATT divider — disable the inherited nodes so their drivers don't
+ * SYS_INIT against missing hardware on boot.
+ */
+&spi3 { status = "disabled"; };
+&led_strip { status = "disabled"; };
+&i2c0 { status = "disabled"; };
+&vbatt { status = "disabled"; };
 
 &pwm0 {
 	status = "okay";
