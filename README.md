@@ -68,6 +68,21 @@ build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules
 UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
 onto the matching board's bootloader drive to flash.
 
+### Restoring the UF2 bootloader after `nrfjprog --recover`
+
+`nrfjprog --recover` wipes the Adafruit UF2 bootloader at flash 0x0.
+To get the drag-and-drop flow back, flash the bootloader hex via SWD:
+
+1. Download a bootloader hex from
+   [Adafruit_nRF52_Bootloader releases](https://github.com/adafruit/Adafruit_nRF52_Bootloader/releases).
+   `nice_nano_bootloader-*.hex` works on most nrf52840 keyboards.
+2. `restore_bootloader.bat C:\path\to\nice_nano_bootloader-*.hex`
+3. Double-tap the board's RESET button — it should enumerate as a USB
+   mass-storage drive.
+4. Build normally: `build.bat <variant>` (no `swd.conf`, code at the
+   bootloader's expected partition).
+5. Drop `out\<variant>.uf2` onto the drive.
+
 ### SWD flashing (no bootloader)
 
 If a chip's UF2 bootloader is gone (e.g. after `nrfjprog --recover`),
