@@ -4,6 +4,7 @@
 /zephyr/*
 !/zephyr/module.yml
 /modules/
+/optional/
 /zmk/
 /bootloader/
 /tools/
