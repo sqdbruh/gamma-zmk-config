@@ -16,6 +16,9 @@ endif
 
 if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT || BOARD_GAMMA_DONGLE
 
+config ZMK_BOARD_COMPAT
+    default y
+
 config ZMK_BLE
 	default y
 
