@@ -94,8 +94,8 @@ if not exist "%HEX%" (
 )
 
 set "JCMD=%TEMP%\flash_%BOARD%.jlink"
-> "%JCMD%" echo r
->>"%JCMD%" echo h
+> "%JCMD%" echo connect
+>>"%JCMD%" echo halt
 >>"%JCMD%" echo erase
 >>"%JCMD%" echo loadfile %HEX%
 >>"%JCMD%" echo r
@@ -103,7 +103,7 @@ set "JCMD=%TEMP%\flash_%BOARD%.jlink"
 >>"%JCMD%" echo q
 
 echo [flash] flashing via JLinkExe (script: %JCMD%)
-"%JLINK%" -Device NRF52840_XXAA -If SWD -Speed 4000 -AutoConnect 1 -ExitOnError 1 -NoGui 1 -CommanderScript "%JCMD%"
+"%JLINK%" -Device NRF52840_XXAA -If SWD -Speed 1000 -AutoConnect 1 -ExitOnError 1 -NoGui 1 -CommanderScript "%JCMD%"
 if errorlevel 1 (
     echo [flash] %BOARD% JLink flash FAILED 1>&2
     exit /b 1
