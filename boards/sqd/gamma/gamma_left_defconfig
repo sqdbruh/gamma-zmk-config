@@ -23,6 +23,22 @@ CONFIG_ZMK_SPLIT=y
 CONFIG_ZMK_SLEEP=n
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 
+# BLE link tuning for the split — fights 1-2 s keypress lag on weak
+# signal. Min/max interval = 6 (= 7.5 ms) so the central polls us
+# every event; latency = 0 so the radio never skips a connection
+# event while a keystroke is in flight; 4 s supervision timeout.
+CONFIG_BT_PERIPHERAL_PREF_MIN_INT=6
+CONFIG_BT_PERIPHERAL_PREF_MAX_INT=6
+CONFIG_BT_PERIPHERAL_PREF_LATENCY=0
+CONFIG_BT_PERIPHERAL_PREF_TIMEOUT=400
+CONFIG_BT_GAP_AUTO_UPDATE_CONN_PARAMS=y
+
+# Force 1 Mbps PHY. 2 Mbps doubles throughput but halves the link
+# budget; on a bad RF environment 2M packets get dropped and the
+# stack burns 1-2 s on retransmissions, which is exactly the lag
+# symptom we're hitting. 1M reaches noticeably further.
+CONFIG_BT_CTLR_PHY_2M=n
+
 # ZMK Studio — peripherals participate so Studio can edit per-half
 # bindings via the BLE split link to the central.
 CONFIG_ZMK_STUDIO=y

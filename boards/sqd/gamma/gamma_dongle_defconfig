@@ -26,6 +26,11 @@ CONFIG_ZMK_SPLIT=y
 CONFIG_ZMK_SLEEP=n
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 
+# Accept fast conn interval requests from the halves and stay on
+# 1 Mbps PHY for range. See gamma_left_defconfig for the rationale.
+CONFIG_BT_GAP_AUTO_UPDATE_CONN_PARAMS=y
+CONFIG_BT_CTLR_PHY_2M=n
+
 # ZMK Studio — live keymap editing via USB.
 # The studio-rpc-usb-uart snippet (passed via -S in build.bat / snippet:
 # in build.yaml) wires up the CDC-ACM endpoint Studio talks to.
