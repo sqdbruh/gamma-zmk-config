@@ -39,16 +39,15 @@ CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=n
 #    Only works once USB enumerates; useless if the crash is pre-USB.
 CONFIG_ZMK_USB_LOGGING=y
 CONFIG_ZMK_LOG_LEVEL_DBG=y
-CONFIG_LOG_MODE_DEFERRED=y
-CONFIG_LOG_BUFFER_SIZE=8192
+CONFIG_LOG_MODE_IMMEDIATE=y
+CONFIG_LOG_PRINTK=y
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_NAME=y
 
 # 2) SEGGER RTT logging — works over SWD without USB enumeration.
-#    Read with: JLinkRTTViewer (free), or `nrfjprog --rtt`, or the
-#    Black Magic Probe's `monitor rtt` command in gdb.
-#    Both backends run; RTT receives the same log messages as USB CDC.
+#    Read with: JLinkRTTViewer.
 CONFIG_USE_SEGGER_RTT=y
 CONFIG_LOG_BACKEND_RTT=y
 CONFIG_LOG_BACKEND_RTT_MODE_BLOCK=y
 CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
+CONFIG_RTT_CONSOLE=y
