@@ -21,6 +21,7 @@
         zmk,kscan = &kscan0;
         zmk,battery = &vbatt;
         zmk,matrix-transform = &default_transform;
+        zmk,physical-layout = &gamma_layout;
         zephyr,code-partition = &code_partition;
         zephyr,sram = &sram0;
         zephyr,flash = &flash0;
@@ -173,6 +174,20 @@
                           LED_COLOR_ID_BLUE>;
   };
 };
+
+/*
+ * Enable the on-die DC/DC regulator. The dongle (nice_nano_v2) and
+ * both halves (E73-2G4M08S1C modules with a 10 µH inductor between
+ * VDD and DCC) have the L/C network required for DC/DC mode, which
+ * cuts current draw vs. the default LDO mode and matters a lot on
+ * battery-powered halves.
+ */
+&reg1 {
+    regulator-initial-mode = <NRF5X_REG_MODE_DCDC>;
+};
+
+/* Physical layout for the keymap editor (ZMK Studio). */
+#include "gamma_layout.dtsi"
 
 &flash0 {
     /*

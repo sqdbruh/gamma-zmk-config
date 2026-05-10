@@ -32,7 +32,9 @@ CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 CONFIG_ZMK_STUDIO=y
 
 # Clock — nRF52 BLE controller requires an LF clock source.
+# nice_nano_v2 has an external 32.768 kHz crystal, so prefer XTAL for
+# better BLE timing accuracy and lower current at idle.
 CONFIG_CLOCK_CONTROL=y
 CONFIG_CLOCK_CONTROL_NRF=y
-CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
-CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=n
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=y
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=n
