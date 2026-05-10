@@ -66,7 +66,8 @@ exit /b 0
 :flash_one
 set "BOARD=%~1"
 set "BUILD_DIR=%ROOT%\build\%BOARD%_swd"
-set "HEX=%BUILD_DIR%\zephyr\zephyr.hex"
+set "HEX=%BUILD_DIR%\zephyr\zmk.hex"
+if not exist "%HEX%" set "HEX=%BUILD_DIR%\zephyr\zephyr.hex"
 
 echo.
 echo ============================================================
