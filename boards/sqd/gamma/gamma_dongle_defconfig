@@ -35,9 +35,10 @@ CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=n
 
 # --- DEBUG ---
-# 1) USB CDC ACM logging — open the dongle's COM port at 115200 8N1.
-#    Only works once USB enumerates; useless if the crash is pre-USB.
-CONFIG_ZMK_USB_LOGGING=y
+# USB CDC ACM logging is intentionally disabled. ZMK_USB_LOGGING routes
+# log output through cdc_acm_uart, which can block during early boot if
+# the USB host hasn't enumerated yet — looks like an infinite reboot.
+# Use RTT (below) for log capture instead.
 CONFIG_ZMK_LOG_LEVEL_DBG=y
 # BLE software link layer forbids LOG_MODE_IMMEDIATE; use deferred mode
 # with aggressive flushing + panic-time flush.
