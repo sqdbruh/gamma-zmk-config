@@ -25,3 +25,17 @@ CONFIG_ZMK_SPLIT=y
 # Permanent USB connection — keep board awake.
 CONFIG_ZMK_SLEEP=n
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
+
+# --- DEBUG: USB CDC ACM logging ---
+# Stream LOG_INF/LOG_ERR over a USB serial endpoint. Open the COM port
+# the dongle enumerates as (115200 8N1) to read crash output.
+CONFIG_ZMK_USB_LOGGING=y
+CONFIG_ZMK_LOG_LEVEL_DBG=y
+# Deferred mode keeps logs flowing even from ISR / panic context.
+CONFIG_LOG_MODE_DEFERRED=y
+CONFIG_LOG_BUFFER_SIZE=8192
+# Print thread + stack info on a fault before resetting.
+CONFIG_DEBUG_THREAD_INFO=y
+CONFIG_EXCEPTION_STACK_TRACE=y
+CONFIG_THREAD_NAME=y
+CONFIG_RESET_ON_FATAL_ERROR=n
