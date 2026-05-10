@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: MIT
+
+if BOARD_GAMMA_DONGLE
+
+config BOARD
+    default "gamma_dongle"
+
+config ZMK_KEYBOARD_NAME
+    default "Gamma"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_USB
+    default y
+
+endif # BOARD_GAMMA_DONGLE
+
+if BOARD_GAMMA_LEFT
+
+config BOARD
+    default "gamma_left"
+
+config ZMK_KEYBOARD_NAME
+    default "Gamma"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+endif # BOARD_GAMMA_LEFT
+
+if BOARD_GAMMA_RIGHT
+
+config BOARD
+    default "gamma_right"
+
+config ZMK_KEYBOARD_NAME
+    default "Gamma"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+endif # BOARD_GAMMA_RIGHT
+
+if BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT || BOARD_GAMMA_DONGLE
+
+config ZMK_BLE
+    default y
+
+config ZMK_SPLIT
+    default y
+
+config I2C
+    default y
+
+config SENSOR
+    default y
+
+if USB
+
+config USB_NRFX
+    default y
+
+config USB_DEVICE_STACK
+    default y
+
+endif # USB
+
+config BT_CTLR
+    default BT
+
+endif # BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT || BOARD_GAMMA_DONGLE

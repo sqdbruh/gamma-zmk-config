@@ -1,0 +1,13 @@
+boards:
+  - name: gamma_left
+    vendor: sqd
+    socs:
+      - name: nrf52840
+  - name: gamma_right
+    vendor: sqd
+    socs:
+      - name: nrf52840
+  - name: gamma_dongle
+    vendor: sqd
+    socs:
+      - name: nrf52840

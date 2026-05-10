@@ -98,7 +98,7 @@ static void soc_to_led_buffer(uint8_t soc, struct led_rgb *buffer) {
 
     int full_leds = (soc * num_leds) / 100;
     if (full_leds == 0) {
-        full_leds = 1;
+        full_leds = 1; // хотя бы один LED
     }
     if (soc > 90) {
         full_leds = num_leds;
@@ -110,15 +110,17 @@ static void soc_to_led_buffer(uint8_t soc, struct led_rgb *buffer) {
         uint8_t r = 0, g = 0, b = 0;
 
         if (i < full_leds) {
+            // Заряженные сегменты
             if (i == 0) {
-                r = CURRENT_BRIGHTNESS;
+                r = CURRENT_BRIGHTNESS; // красный
             } else if (i == 1) {
-                r = CURRENT_BRIGHTNESS;
+                r = CURRENT_BRIGHTNESS; // жёлтый
                 g = (uint8_t)(CURRENT_BRIGHTNESS * 0.5f);
             } else {
-                g = CURRENT_BRIGHTNESS;
+                g = CURRENT_BRIGHTNESS; // зелёный
             }
         } else {
+            // Незаряженные сегменты — тусклый белый
             r = dim_white;
             g = dim_white;
             b = dim_white;
@@ -130,6 +132,8 @@ static void soc_to_led_buffer(uint8_t soc, struct led_rgb *buffer) {
     }
 }
 
+// #define CHECK_BATTERY_EVERY 10000
+// int tickToCheckBattery = CHECK_BATTERY_EVERY;
 volatile bool showBattery;
 volatile bool showBatteryDisplay;
 volatile bool isPowered;
@@ -174,8 +178,9 @@ K_TIMER_DEFINE(gamma_tick_timer, gamma_tick_handler, NULL);
 
 static void enable_led_power(bool enable) {
     if (enable) {
+        // First enable the GPIO
         gpio_pin_set_dt(&led_enable, true);
-        k_msleep(10);
+        k_msleep(10); // Give the LED power time to stabilize
 
         if (device_is_ready(spi_dev)) {
             int ret = pm_device_action_run(spi_dev, PM_DEVICE_ACTION_RESUME);
@@ -183,7 +188,7 @@ static void enable_led_power(bool enable) {
                 LOG_ERR("Failed to resume SPI3: %d", ret);
                 return;
             }
-            k_msleep(10);
+            k_msleep(10); // Give SPI time to initialize
             LOG_INF("SPI3 resumed successfully");
         }
     } else {
@@ -232,9 +237,11 @@ void startup_tick(struct gamma_led_state *state) {
     uint8_t soc = zmk_battery_state_of_charge();
     int num_leds = STRIP_NUM_PIXELS;
 
+    // Подготовим буфер с цветами всех сегментов (заряженные + тусклый белый для пустых)
     struct led_rgb temp_buffer[STRIP_NUM_PIXELS];
     soc_to_led_buffer(soc, temp_buffer);
 
+    // Рассчёт fade-in/out
     float fade_factor = 1.0f;
     uint32_t fade_in_ticks = (state->durationInTicks * 30) / 100;
     uint32_t fade_out_start_tick = (state->durationInTicks * 80) / 100;
@@ -246,12 +253,14 @@ void startup_tick(struct gamma_led_state *state) {
         fade_factor = 1.0f - ((float)fade_ticks / (state->durationInTicks - fade_out_start_tick));
     }
 
+    // Wave-эффект (опционально—можно убрать, тогда просто пойдёт равномерный fade)
     uint32_t total_ticks = state->durationInTicks;
     uint32_t wave_ticks = (total_ticks * 10) / 100;
     uint32_t delay_per_led = wave_ticks / num_leds;
     uint32_t start_tick, end_tick;
 
     for (int i = 0; i < num_leds; i++) {
+        // базовые цвета из буфера + fade_factor
         uint8_t r_base = (uint8_t)(temp_buffer[i].r * fade_factor);
         uint8_t g_base = (uint8_t)(temp_buffer[i].g * fade_factor);
         uint8_t b_base = (uint8_t)(temp_buffer[i].b * fade_factor);
@@ -260,9 +269,11 @@ void startup_tick(struct gamma_led_state *state) {
             start_tick = i * delay_per_led;
             end_tick = start_tick + delay_per_led;
             if (state->currentTick < start_tick) {
+                // ещё не дошли до этого LED
                 buffer_single_led_color(i, 0, 0, 0);
                 continue;
             } else if (state->currentTick < end_tick) {
+                // плавный quadratic fade-in для этого LED
                 uint32_t elapsed = state->currentTick - start_tick;
                 uint32_t prog = (elapsed * 255) / delay_per_led;
                 uint32_t qfade = (prog * prog) / 255;
@@ -270,8 +281,10 @@ void startup_tick(struct gamma_led_state *state) {
                                         (b_base * qfade) / 255);
                 continue;
             }
+            // иначе уже фазе полного яркого
         }
 
+        // В все остальные моменты просто показываем цвет
         buffer_single_led_color(i, r_base, g_base, b_base);
     }
 
@@ -299,13 +312,14 @@ void battery_charging_tick() {
     static int pause_ticks = 0;
 
     const int num_leds = STRIP_NUM_PIXELS;
-    const int speed = 8;
-    const float fade_factor = 0.85f;
-    const float min_thresh = 0.01f;
-    const int pause_duration = 20;
+    const int speed = 8;             // head moves every 3 calls
+    const float fade_factor = 0.85f; // trail fade multiplier
+    const float min_thresh = 0.01f;  // cutoff for zero
+    const int pause_duration = 20;   // ticks to wait after full fade
 
     tick++;
 
+    // 1) Fade existing trail
     for (int i = 0; i < num_leds; i++) {
         trail[i] *= fade_factor;
         if (trail[i] < min_thresh) {
@@ -314,17 +328,21 @@ void battery_charging_tick() {
     }
 
     if (!waiting) {
+        // 2) Move head
         if (tick % speed == 0) {
             forward_pos++;
             if (forward_pos >= num_leds) {
+                // Reached top—enter waiting state
                 waiting = true;
             }
         }
+        // 3) Light up head if still in motion
         if (forward_pos < num_leds) {
-            int head = forward_pos;
+            int head = forward_pos; // bottom-to-top
             trail[head] = 1.0f;
         }
     } else {
+        // 4) Check if any trail remains
         bool any_left = false;
         for (int i = 0; i < num_leds; i++) {
             if (trail[i] > 0.0f) {
@@ -333,9 +351,11 @@ void battery_charging_tick() {
             }
         }
         if (!any_left) {
+            // 5) Once fully faded, wait additional ticks
             if (pause_ticks < pause_duration) {
                 pause_ticks++;
             } else {
+                // Reset everything and restart
                 waiting = false;
                 forward_pos = 0;
                 tick = 0;
@@ -344,6 +364,7 @@ void battery_charging_tick() {
         }
     }
 
+    // 6) Render LED strip
     for (int i = 0; i < num_leds; i++) {
         uint8_t b = (uint8_t)(trail[i] * 255);
         buffer_single_led_color(i, 0, b, 0);
@@ -352,13 +373,14 @@ void battery_charging_tick() {
 }
 
 void battery_fully_charged_tick() {
+    // Показываем все светодиоды зеленым цветом при полной зарядке
     buffer_all_leds_color(0, CURRENT_BRIGHTNESS, 0);
     update_leds();
 }
 
 static bool is_charging(void) {
-    int v = gpio_pin_get_dt(&charging_status);
-    return v == 1;
+    int v = gpio_pin_get_dt(&charging_status); // с ACTIVE_LOW это уже инвертировано
+    return v == 1; // 1 == «активно», т.е. заряд идёт
 }
 void ble_connected_tick(struct gamma_led_state *state) {
     float brightness = 0.0f;
@@ -388,6 +410,7 @@ static void gamma_tick(struct k_work *work) {
         }
     } else if (isPowered) {
         enable_led_power(true);
+        // Проверяем статус зарядки
         bool charging = is_charging();
         if (charging != isCharging) {
             isCharging = charging;
@@ -397,7 +420,7 @@ static void gamma_tick(struct k_work *work) {
             if (isCharging) {
                 battery_charging_tick();
             } else {
-                battery_fully_charged_tick();
+                battery_fully_charged_tick(); 
                 // TODO(sqd): This might also indicate that no battery plugged in
             }
         }

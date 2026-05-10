@@ -12,7 +12,7 @@ not require any patches to the upstream ZMK tree.
 
 ```
 .
-├── boards/arm/gamma/                Board files for all three Gamma variants
+├── boards/sqd/gamma/                Board files for all three Gamma variants
 │   ├── Kconfig.board                CONFIG_BOARD_GAMMA_{LEFT,RIGHT,DONGLE}
 │   ├── Kconfig.defconfig            Defaults conditional on the active variant
 │   ├── gamma.dtsi                   Shared SoC + matrix + LED-strip nodes
@@ -73,16 +73,16 @@ UF2 files land in `build/<variant>/zephyr/zmk.uf2`.
 ## Customizing
 
 - **Keymap:** edit `config/gamma.keymap`. The shipped default lives at
-  `boards/arm/gamma/gamma.keymap` and is overridden whenever
+  `boards/sqd/gamma/gamma.keymap` and is overridden whenever
   `config/gamma.keymap` exists.
 - **Project-wide Kconfig:** edit `config/gamma.conf`.
-- **Per-variant Kconfig:** edit the matching `boards/arm/gamma/gamma_<v>_defconfig`.
+- **Per-variant Kconfig:** edit the matching `boards/sqd/gamma/gamma_<v>_defconfig`.
 
 ## Notes on the `&check_bat` behavior
 
 `&check_bat` is a custom zero-param behavior shipped by this module. When
 pressed it calls `show_battery()`, on release it calls `hide_battery()`.
-Implementations live in `boards/arm/gamma/gamma.c` (LED-strip variant) and
-`boards/arm/gamma/gamma_seg.c` (7-segment variant — disabled by default).
+Implementations live in `boards/sqd/gamma/gamma.c` (LED-strip variant) and
+`boards/sqd/gamma/gamma_seg.c` (7-segment variant — disabled by default).
 The behavior compiles to no-ops when `CONFIG_ZMK_CHECK_BATTERY_BEH=n`, so
 other boards in this module can leave the symbol off.
