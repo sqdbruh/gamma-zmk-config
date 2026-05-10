@@ -80,6 +80,14 @@
 &i2c0 { status = "disabled"; };
 &vbatt { status = "disabled"; };
 
+/*
+ * Zephyr USB device controller alias — required by the
+ * studio-rpc-usb-uart snippet so it can attach a CDC-ACM endpoint
+ * for ZMK Studio's RPC channel without the snippet caring about
+ * which SoC's USB peripheral we use.
+ */
+zephyr_udc0: &usbd {};
+
 &pwm0 {
 	status = "okay";
 	pinctrl-0 = <&pwm0_default>;

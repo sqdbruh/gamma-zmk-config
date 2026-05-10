@@ -68,6 +68,18 @@ build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules
 UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
 onto the matching board's bootloader drive to flash.
 
+#### ZMK Studio
+
+`CONFIG_ZMK_STUDIO=y` is enabled on all three variants. The dongle
+build automatically applies the upstream `studio-rpc-usb-uart`
+snippet (both via `build.bat` and the GHA matrix) which exposes a
+second USB CDC endpoint as the RPC channel.
+
+To use: flash all three boards, plug the dongle into a host, open
+[ZMK Studio](https://zmk.studio/), and connect to the dongle's
+new serial port. Edits propagate to the halves over the BLE split
+link.
+
 #### Settings-reset firmware
 
 When BLE pairing between halves and the dongle is broken (after a

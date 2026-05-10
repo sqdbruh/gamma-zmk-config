@@ -3,6 +3,7 @@ include:
   - board: gamma_left
   - board: gamma_right
   - board: gamma_dongle
+    snippet: studio-rpc-usb-uart
   # Settings-reset variants: flash once to wipe BLE bonds and ZMK
   # settings storage, then re-flash the regular firmware. Used to
   # re-pair halves with the dongle from a clean state.
@@ -13,5 +14,6 @@ include:
     cmake-args: -DEXTRA_CONF_FILE=settings_reset.conf
     artifact-name: gamma_right_reset
   - board: gamma_dongle
+    snippet: studio-rpc-usb-uart
     cmake-args: -DEXTRA_CONF_FILE=settings_reset.conf
     artifact-name: gamma_dongle_reset

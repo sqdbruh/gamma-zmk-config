@@ -99,8 +99,13 @@ echo ============================================================
 echo [build] %OUT_NAME%
 echo ============================================================
 
+REM Dongle is the central — apply the studio-rpc-usb-uart snippet so
+REM ZMK Studio gets a USB CDC RPC endpoint. Halves don't need it.
+set "SNIPPET="
+if /I "%BOARD%"=="gamma_dongle" set "SNIPPET=-S studio-rpc-usb-uart"
+
 pushd "%ROOT%" || exit /b 1
-call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%" %EXTRA_CMAKE%
+call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" %SNIPPET% -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%" %EXTRA_CMAKE%
 set "RC=%ERRORLEVEL%"
 popd
 
