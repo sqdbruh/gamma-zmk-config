@@ -57,7 +57,10 @@ CONFIG_LOG_PRINTK=y
 CONFIG_ZMK_LOG_LEVEL_DBG=y
 CONFIG_USE_SEGGER_RTT=y
 CONFIG_LOG_BACKEND_RTT=y
-CONFIG_LOG_BACKEND_RTT_MODE_BLOCK=y
+# DROP mode: if no host is reading RTT (SWD detached) the backend
+# discards messages instead of blocking the producer. With BLOCK mode
+# the firmware freezes the moment the up-buffer fills.
+CONFIG_LOG_BACKEND_RTT_MODE_DROP=y
 CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
 # RTT-backed console for printk (synchronous, bypasses log buffer) and
 # kernel panic dumps.
