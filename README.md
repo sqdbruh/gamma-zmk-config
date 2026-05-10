@@ -68,6 +68,21 @@ build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules
 UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
 onto the matching board's bootloader drive to flash.
 
+#### Settings-reset firmware
+
+When BLE pairing between halves and the dongle is broken (after a
+re-flash, lost device, etc.), build a one-shot settings-reset UF2:
+
+```bat
+build.bat -r              REM out\gamma_{left,right,dongle}_reset.uf2
+build.bat -r dongle       REM only the dongle reset firmware
+```
+
+Drop the `_reset.uf2` onto the bootloader drive — the board boots
+once, wipes BLE bonds and the ZMK settings store, then idles. Drop
+the regular `out\<board>.uf2` to put normal firmware back. Repeat
+across all three boards if the whole link needs re-pairing.
+
 ### Setting VDD to 3.3V after a UICR wipe
 
 `nrfjprog --recover` (or `--eraseuicr`) clears the chip's UICR, which

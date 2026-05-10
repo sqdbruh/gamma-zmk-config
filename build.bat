@@ -3,15 +3,21 @@ REM ===========================================================================
 REM Local build helper for gamma-zmk-config.
 REM
 REM Usage:
-REM   build.bat                 build left + right + dongle
+REM   build.bat                 build left + right + dongle (normal firmware)
 REM   build.bat dongle          build just the dongle
 REM   build.bat left right      build halves only
-REM   build.bat clean           wipe build/ and out/ and re-init west
-REM   build.bat -p ...          add -p to force pristine for the listed targets
+REM   build.bat -r              build settings-reset firmware for all three
+REM   build.bat -r dongle       settings-reset firmware for the dongle only
+REM   build.bat -p ...          force pristine for the listed targets
+REM   build.bat clean           wipe build/, out/, .west/, west clones
 REM
 REM First run does `west init -l config && west update && west zephyr-export`,
 REM cloning zmk + zephyr + modules into the repo root. Subsequent runs skip
 REM init and just rebuild. UF2s land in .\out\.
+REM
+REM Settings-reset firmware (-r) flashes once to wipe BLE bonds and the ZMK
+REM settings store; reflash the regular firmware afterwards. Use it when you
+REM need to re-pair halves with the dongle from a clean state.
 REM
 REM Requires the ZMK toolchain on PATH: python with `west`, `cmake`, `ninja`,
 REM and the Zephyr ARM SDK (ZEPHYR_SDK_INSTALL_DIR set or sdk in default path).
@@ -24,12 +30,15 @@ set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 
 set "PRISTINE="
+set "RESET_MODE="
 set "TARGETS="
 
 :parse
 if "%~1"=="" goto after_parse
 if /I "%~1"=="-p"        ( set "PRISTINE=-p" & shift & goto parse )
 if /I "%~1"=="--pristine" ( set "PRISTINE=-p" & shift & goto parse )
+if /I "%~1"=="-r"        ( set "RESET_MODE=1" & shift & goto parse )
+if /I "%~1"=="--reset"   ( set "RESET_MODE=1" & shift & goto parse )
 if /I "%~1"=="clean"     goto do_clean
 if /I "%~1"=="left"      ( set "TARGETS=!TARGETS! gamma_left" & shift & goto parse )
 if /I "%~1"=="right"     ( set "TARGETS=!TARGETS! gamma_right" & shift & goto parse )
@@ -75,37 +84,45 @@ exit /b 0
 
 :build_one
 set "BOARD=%~1"
-set "BUILD_DIR=%ROOT%\build\%BOARD%"
+if defined RESET_MODE (
+    set "SUFFIX=_reset"
+    set "EXTRA_CMAKE=-DEXTRA_CONF_FILE=%ROOT%\settings_reset.conf"
+) else (
+    set "SUFFIX="
+    set "EXTRA_CMAKE="
+)
+set "BUILD_DIR=%ROOT%\build\%BOARD%%SUFFIX%"
+set "OUT_NAME=%BOARD%%SUFFIX%"
+
 echo.
 echo ============================================================
-echo [build] %BOARD%
+echo [build] %OUT_NAME%
 echo ============================================================
 
 pushd "%ROOT%" || exit /b 1
-call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%"
+call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%" %EXTRA_CMAKE%
 set "RC=%ERRORLEVEL%"
 popd
 
 if not "%RC%"=="0" (
-    echo [build] %BOARD% FAILED ^(exit %RC%^) 1>&2
+    echo [build] %OUT_NAME% FAILED ^(exit %RC%^) 1>&2
     exit /b %RC%
 )
 
 if not exist "%BUILD_DIR%\zephyr\zmk.uf2" (
-    echo [build] %BOARD% built but no zmk.uf2 found at %BUILD_DIR%\zephyr\ 1>&2
-    echo [build] this usually means the previous build failed mid-way. 1>&2
+    echo [build] %OUT_NAME% built but no zmk.uf2 found at %BUILD_DIR%\zephyr\ 1>&2
     echo [build] retry with: build.bat -p %BOARD:gamma_=% 1>&2
     exit /b 1
 )
 REM Sanity-check: real ZMK firmware is ~150-300 KB. Anything tiny is stale.
 for %%S in ("%BUILD_DIR%\zephyr\zmk.uf2") do set "UF2_SIZE=%%~zS"
 if %UF2_SIZE% LSS 10000 (
-    echo [build] %BOARD%: zmk.uf2 is only %UF2_SIZE% bytes — looks stale. 1>&2
+    echo [build] %OUT_NAME%: zmk.uf2 is only %UF2_SIZE% bytes — looks stale. 1>&2
     echo [build] retry with: build.bat -p %BOARD:gamma_=% 1>&2
     exit /b 1
 )
-copy /Y "%BUILD_DIR%\zephyr\zmk.uf2" "%ROOT%\out\%BOARD%.uf2" >nul
-echo [build] %BOARD% -> out\%BOARD%.uf2 ^(%UF2_SIZE% bytes^)
+copy /Y "%BUILD_DIR%\zephyr\zmk.uf2" "%ROOT%\out\%OUT_NAME%.uf2" >nul
+echo [build] %OUT_NAME% -> out\%OUT_NAME%.uf2 ^(%UF2_SIZE% bytes^)
 exit /b 0
 
 
