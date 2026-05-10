@@ -50,22 +50,34 @@ not require any patches to the upstream ZMK tree.
 3. Flash each half / the dongle by dropping its UF2 onto the corresponding
    bootloader drive.
 
-### Local build
+### Local build (Windows)
 
-The standard ZMK toolchain works. Because this repo is itself a Zephyr
-module, the build needs `ZMK_EXTRA_MODULES` (not `ZMK_CONFIG`) so the
-custom board and behavior are discovered:
+`build.bat` at the repo root does first-time `west init`/`update` and
+then builds whatever variants you ask for. Requires the ZMK toolchain
+(Python + west + cmake + ninja + Zephyr SDK) on `PATH` — see
+https://zmk.dev/docs/development/setup/toolchains.
+
+```bat
+build.bat                  REM build all three: left, right, dongle
+build.bat dongle           REM single variant
+build.bat left right       REM halves only
+build.bat -p dongle        REM force pristine rebuild
+build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules/
+```
+
+UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
+onto the matching board's bootloader drive to flash.
+
+### Local build (manual)
 
 ```sh
-# From a fresh workspace:
 west init -l config
 west update
 west zephyr-export
 
-# Then for each variant:
-west build -d build/left   -b gamma_left   -- -DZMK_EXTRA_MODULES="$(pwd)"
-west build -d build/right  -b gamma_right  -- -DZMK_EXTRA_MODULES="$(pwd)"
-west build -d build/dongle -b gamma_dongle -- -DZMK_EXTRA_MODULES="$(pwd)"
+west build -d build/left   -s zmk/app -b gamma_left   -- -DZMK_CONFIG="$(pwd)/config" -DZMK_EXTRA_MODULES="$(pwd)"
+west build -d build/right  -s zmk/app -b gamma_right  -- -DZMK_CONFIG="$(pwd)/config" -DZMK_EXTRA_MODULES="$(pwd)"
+west build -d build/dongle -s zmk/app -b gamma_dongle -- -DZMK_CONFIG="$(pwd)/config" -DZMK_EXTRA_MODULES="$(pwd)"
 ```
 
 UF2 files land in `build/<variant>/zephyr/zmk.uf2`.

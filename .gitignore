@@ -1,6 +1,9 @@
 /build/
+/out/
 /.west/
 /zephyr/*
 !/zephyr/module.yml
 /modules/
 /zmk/
+/bootloader/
+/tools/
