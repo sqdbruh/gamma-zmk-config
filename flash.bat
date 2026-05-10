@@ -1,6 +1,6 @@
 @echo off
 REM ===========================================================================
-REM Local SWD flash helper (J-Link + nrfjprog).
+REM Local SWD flash helper (J-Link).
 REM
 REM Usage:
 REM   flash.bat left
@@ -10,14 +10,14 @@ REM   flash.bat -p left           force pristine rebuild before flashing
 REM
 REM Builds the variant with swd.conf applied (vectors at 0x0, UF2 disabled)
 REM into build\gamma_<variant>_swd\, then erases + programs + resets the chip
-REM via `nrfjprog`.
+REM via JLinkExe over SWD.
 REM
 REM Use this after `nrfjprog --recover` wiped the UF2 bootloader, or any time
 REM you don't want to go through the bootloader to flash. Halves and the
 REM dongle that still have the Adafruit UF2 bootloader can keep using
 REM build.bat + dropping the .uf2 onto the bootloader drive.
 REM
-REM Requires nrfjprog on PATH (https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools).
+REM Requires JLinkExe on PATH (SEGGER J-Link tools).
 REM ===========================================================================
 
 setlocal EnableDelayedExpansion
@@ -44,11 +44,16 @@ if "%TARGETS%"=="" (
     exit /b 1
 )
 
-where nrfjprog >nul 2>&1
+set "JLINK=JLink.exe"
+where JLink.exe >nul 2>&1
 if errorlevel 1 (
-    echo [flash] nrfjprog not found on PATH. 1>&2
-    echo [flash] install nRF Command Line Tools and retry. 1>&2
-    exit /b 1
+    set "JLINK=JLinkExe"
+    where JLinkExe >nul 2>&1
+    if errorlevel 1 (
+        echo [flash] JLink.exe not found on PATH. 1>&2
+        echo [flash] install SEGGER J-Link tools and retry. 1>&2
+        exit /b 1
+    )
 )
 
 if not exist "%ROOT%\.west\config" (
@@ -88,13 +93,22 @@ if not exist "%HEX%" (
     exit /b 1
 )
 
-echo [flash] erasing chip + programming via nrfjprog...
-nrfjprog -f nrf52 --eraseall
-if errorlevel 1 ( echo [flash] eraseall failed 1>&2 & exit /b 1 )
-nrfjprog -f nrf52 --program "%HEX%" --verify
-if errorlevel 1 ( echo [flash] program failed 1>&2 & exit /b 1 )
-nrfjprog -f nrf52 --reset
-if errorlevel 1 ( echo [flash] reset failed 1>&2 & exit /b 1 )
+set "JCMD=%TEMP%\flash_%BOARD%.jlink"
+> "%JCMD%" echo r
+>>"%JCMD%" echo h
+>>"%JCMD%" echo erase
+>>"%JCMD%" echo loadfile %HEX%
+>>"%JCMD%" echo r
+>>"%JCMD%" echo g
+>>"%JCMD%" echo q
 
+echo [flash] flashing via JLinkExe (script: %JCMD%)
+"%JLINK%" -Device NRF52840_XXAA -If SWD -Speed 4000 -AutoConnect 1 -ExitOnError 1 -NoGui 1 -CommanderScript "%JCMD%"
+if errorlevel 1 (
+    echo [flash] %BOARD% JLink flash FAILED 1>&2
+    exit /b 1
+)
+
+del "%JCMD%" >nul 2>&1
 echo [flash] %BOARD% done.
 exit /b 0
