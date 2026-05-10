@@ -68,6 +68,22 @@ build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules
 UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
 onto the matching board's bootloader drive to flash.
 
+### SWD flashing (no bootloader)
+
+If a chip's UF2 bootloader is gone (e.g. after `nrfjprog --recover`),
+or you just don't want to go through the bootloader, use `flash.bat`:
+
+```bat
+flash.bat left           REM build + flash via SWD/nrfjprog
+flash.bat dongle
+flash.bat -p right       REM force pristine rebuild before flashing
+```
+
+This builds with `swd.conf` applied (vectors at 0x0, UF2 disabled)
+into `build\gamma_<variant>_swd\` and runs
+`nrfjprog --eraseall && nrfjprog --program <zephyr.hex> && nrfjprog --reset`.
+Requires nRF Command Line Tools on `PATH`.
+
 ### Local build (manual)
 
 ```sh
