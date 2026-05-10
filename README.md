@@ -68,6 +68,24 @@ build.bat clean            REM wipe build/, out/, .west/, zephyr/, zmk/, modules
 UF2s land in `out\<board>.uf2` (`out\gamma_left.uf2` etc.). Drop each
 onto the matching board's bootloader drive to flash.
 
+### Setting VDD to 3.3V after a UICR wipe
+
+`nrfjprog --recover` (or `--eraseuicr`) clears the chip's UICR, which
+includes the regulator setting. After a wipe `UICR.REGOUT0` reverts to
+its default of 1.8V — the MCU runs but every 3.3V peripheral
+(WS2812, charging IC, sensors) starves. Symptom: the keyboard works
+only while J-Link is attached (because VTref supplies external 3V3),
+freezes the instant SWD is detached.
+
+```bat
+set_regout_3v3.bat
+```
+
+This writes `UICR.REGOUT0 = 5` (= 3.3V) via J-Link. UICR survives
+reset, so it's a one-shot fix per chip. Unplug everything afterwards
+for ~5 s, then reapply power — the regulator only switches output
+voltage on a full power-on reset.
+
 ### Restoring the UF2 bootloader after `nrfjprog --recover`
 
 `nrfjprog --recover` wipes the Adafruit UF2 bootloader at flash 0x0.
