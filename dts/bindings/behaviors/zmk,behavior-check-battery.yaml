@@ -1,0 +1,8 @@
+# Copyright (c) 2020 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Show battery info on display
+
+compatible: "zmk,behavior-check-battery"
+
+include: zero_param.yaml

@@ -1,0 +1,26 @@
+#include "gamma.dtsi"
+
+/ {
+    gamma_gpios {
+        compatible = "gpio-leds";
+        led188_1: led_1 {
+            gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;
+        };
+        led188_2: led_2 {
+            gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+        };
+        led188_3: led_3 {
+            gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
+        };
+        led188_4: led_4 {
+            gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        };
+        led188_5: led_5 {
+            gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+        };
+
+        chrg_status: chrg_status {
+            gpios = <&gpio1 0 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        };
+    };
+};

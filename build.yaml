@@ -1,0 +1,5 @@
+# See https://zmk.dev/docs/user-setup/manual#build-yaml-syntax
+include:
+  - board: gamma_left
+  - board: gamma_right
+  - board: gamma_dongle

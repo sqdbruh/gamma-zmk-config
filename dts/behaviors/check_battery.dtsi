@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/ {
+    behaviors {
+        // Behavior can be invoked on peripherals, so name must be <= 8 characters.
+            check_bat: checkbat {
+            compatible = "zmk,behavior-check-battery";
+            #binding-cells = <0>;
+        };
+    };
+};
