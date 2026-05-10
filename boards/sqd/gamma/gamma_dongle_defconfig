@@ -30,6 +30,10 @@ CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
 # The studio-rpc-usb-uart snippet (passed via -S in build.bat / snippet:
 # in build.yaml) wires up the CDC-ACM endpoint Studio talks to.
 CONFIG_ZMK_STUDIO=y
+# Disable Studio locking. Default behaviour requires &studio_unlock
+# bound somewhere in the keymap to confirm physical access before
+# editing. Off until we wire the unlock behavior into a combo.
+CONFIG_ZMK_STUDIO_LOCKING=n
 
 # Clock — nRF52 BLE controller requires an LF clock source.
 # nice_nano_v2 has an external 32.768 kHz crystal, so prefer XTAL for
