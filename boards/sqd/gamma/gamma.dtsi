@@ -20,7 +20,15 @@
     chosen {
         zmk,kscan = &kscan0;
         zmk,battery = &vbatt;
-        zmk,matrix-transform = &default_transform;
+        /*
+         * No zmk,matrix-transform here — when ZMK Studio is enabled
+         * the transform must be wired through the physical layout's
+         * `transform` property (see gamma_layout.dtsi). Setting both
+         * makes physical_layouts.c's USE_PHY_LAYOUTS macro evaluate
+         * to 0 and the build aborts with "Keyboards require
+         * additional configuration to allow for firmware with ZMK
+         * Studio enabled".
+         */
         zmk,physical-layout = &gamma_layout;
         zephyr,code-partition = &code_partition;
         zephyr,sram = &sram0;
