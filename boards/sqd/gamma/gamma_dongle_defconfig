@@ -34,8 +34,6 @@ CONFIG_ZMK_LOG_LEVEL_DBG=y
 # Deferred mode keeps logs flowing even from ISR / panic context.
 CONFIG_LOG_MODE_DEFERRED=y
 CONFIG_LOG_BUFFER_SIZE=8192
-# Print thread + stack info on a fault before resetting.
+# Print thread info on a fault before resetting.
 CONFIG_DEBUG_THREAD_INFO=y
-CONFIG_EXCEPTION_STACK_TRACE=y
 CONFIG_THREAD_NAME=y
-CONFIG_RESET_ON_FATAL_ERROR=n
