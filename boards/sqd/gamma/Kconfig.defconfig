@@ -66,7 +66,4 @@ config USB_DEVICE_STACK
 
 endif # USB
 
-config BT_CTLR
-    default BT
-
 endif # BOARD_GAMMA_LEFT || BOARD_GAMMA_RIGHT || BOARD_GAMMA_DONGLE
