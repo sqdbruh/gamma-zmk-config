@@ -93,6 +93,17 @@ if not exist "%HEX%" (
     exit /b 1
 )
 
+REM Sanity check: hex must contain a segment loading at flash 0x00000000
+REM (vectors must land at 0x0 to boot without a bootloader). The ihex
+REM extended-linear-address record `:020000040000FA` sets the upper
+REM 16 bits of the load address to 0x0000.
+findstr /B /C:":020000040000" "%HEX%" >nul
+if errorlevel 1 (
+    echo [flash] WARNING: %HEX% has no records loading at 0x0000xxxx 1>&2
+    echo [flash]          swd.conf was probably not applied. Cold-reset 1>&2
+    echo [flash]          boot will fail. Try: flash.bat -p %BOARD% 1>&2
+)
+
 set "JCMD=%TEMP%\flash_%BOARD%.jlink"
 > "%JCMD%" echo connect
 >>"%JCMD%" echo halt
