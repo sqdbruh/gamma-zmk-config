@@ -62,8 +62,9 @@ CONFIG_LOG_BACKEND_RTT=y
 # the firmware freezes the moment the up-buffer fills.
 CONFIG_LOG_BACKEND_RTT_MODE_DROP=y
 CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
-# RTT-backed console for printk (synchronous, bypasses log buffer) and
-# kernel panic dumps.
-CONFIG_RTT_CONSOLE=y
+# Do NOT enable RTT_CONSOLE: it routes Zephyr's printk through
+# SEGGER_RTT_Write, which uses BLOCKING semantics under the hood
+# regardless of LOG_BACKEND_RTT_MODE. If JLink isn't draining the
+# buffer the printk caller hangs and the whole system stops with it.
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_NAME=y

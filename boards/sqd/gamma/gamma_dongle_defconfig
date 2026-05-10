@@ -56,4 +56,5 @@ CONFIG_USE_SEGGER_RTT=y
 CONFIG_LOG_BACKEND_RTT=y
 CONFIG_LOG_BACKEND_RTT_MODE_DROP=y
 CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
-CONFIG_RTT_CONSOLE=y
+# RTT_CONSOLE intentionally not enabled — printk through SEGGER_RTT_Write
+# blocks when no host is draining the buffer, freezing the whole system.
