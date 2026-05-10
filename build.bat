@@ -127,7 +127,10 @@ if %UF2_SIZE% LSS 10000 (
     exit /b 1
 )
 copy /Y "%BUILD_DIR%\zephyr\zmk.uf2" "%ROOT%\out\%OUT_NAME%.uf2" >nul
-echo [build] %OUT_NAME% -> out\%OUT_NAME%.uf2 ^(%UF2_SIZE% bytes^)
+REM `>` after `-` in `->` was being parsed as redirection in cmd, which
+REM overwrote the just-copied UF2 with the echo prefix. Use `=>` or
+REM escape `>` with `^` so the arrow stays text.
+echo [build] %OUT_NAME% =^> out\%OUT_NAME%.uf2 ^(%UF2_SIZE% bytes^)
 exit /b 0
 
 
