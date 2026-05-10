@@ -14,6 +14,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/fatal.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -22,7 +23,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 void k_sys_fatal_error_handler(unsigned int reason, const struct arch_esf *esf) {
     ARG_UNUSED(esf);
     LOG_ERR("=== GAMMA FATAL: reason=%u ===", reason);
-    LOG_PANIC();
+    log_panic();
     /* Park forever so RTT keeps the panic frame and JLink halt sees a
      * deterministic PC inside this loop. The R7 frame pointer (or the
      * stacked PC at MSP+24) gives the actual fault site. */
