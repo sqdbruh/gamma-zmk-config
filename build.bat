@@ -86,10 +86,8 @@ exit /b 0
 set "BOARD=%~1"
 if defined RESET_MODE (
     set "SUFFIX=_reset"
-    set "EXTRA_CMAKE=-DEXTRA_CONF_FILE=%ROOT%\settings_reset.conf"
 ) else (
     set "SUFFIX="
-    set "EXTRA_CMAKE="
 )
 set "BUILD_DIR=%ROOT%\build\%BOARD%%SUFFIX%"
 set "OUT_NAME=%BOARD%%SUFFIX%"
@@ -99,13 +97,25 @@ echo ============================================================
 echo [build] %OUT_NAME%
 echo ============================================================
 
-REM Dongle is the central — apply the studio-rpc-usb-uart snippet so
-REM ZMK Studio gets a USB CDC RPC endpoint. Halves don't need it.
-set "SNIPPET="
-if /I "%BOARD%"=="gamma_dongle" set "SNIPPET=-S studio-rpc-usb-uart"
+REM Snippets:
+REM   studio-rpc-usb-uart — dongle (central) needs the CDC-ACM RPC
+REM     endpoint for ZMK Studio. Halves don't.
+REM   settings-reset — repo-local snippet that wipes BLE bonds + the
+REM     ZMK settings store on every boot. Applied when -r is set.
+set "SNIPPETS="
+if /I "%BOARD%"=="gamma_dongle" set "SNIPPETS=studio-rpc-usb-uart"
+if defined RESET_MODE (
+    if defined SNIPPETS (
+        set "SNIPPETS=!SNIPPETS!;settings-reset"
+    ) else (
+        set "SNIPPETS=settings-reset"
+    )
+)
+set "SNIPPET_ARG="
+if defined SNIPPETS set "SNIPPET_ARG=-S !SNIPPETS!"
 
 pushd "%ROOT%" || exit /b 1
-call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" %SNIPPET% -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%" %EXTRA_CMAKE%
+call west build %PRISTINE% -d "%BUILD_DIR%" -s zmk/app -b "%BOARD%" %SNIPPET_ARG% -- -DZMK_CONFIG="%ROOT%\config" -DZMK_EXTRA_MODULES="%ROOT%"
 set "RC=%ERRORLEVEL%"
 popd
 

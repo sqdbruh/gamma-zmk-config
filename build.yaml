@@ -8,12 +8,11 @@ include:
   # settings storage, then re-flash the regular firmware. Used to
   # re-pair halves with the dongle from a clean state.
   - board: gamma_left
-    cmake-args: -DEXTRA_CONF_FILE=settings_reset.conf
+    snippet: settings-reset
     artifact-name: gamma_left_reset
   - board: gamma_right
-    cmake-args: -DEXTRA_CONF_FILE=settings_reset.conf
+    snippet: settings-reset
     artifact-name: gamma_right_reset
   - board: gamma_dongle
-    snippet: studio-rpc-usb-uart
-    cmake-args: -DEXTRA_CONF_FILE=settings_reset.conf
+    snippet: studio-rpc-usb-uart;settings-reset
     artifact-name: gamma_dongle_reset
