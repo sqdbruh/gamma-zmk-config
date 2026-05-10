@@ -91,13 +91,21 @@ if not "%RC%"=="0" (
     exit /b %RC%
 )
 
-if exist "%BUILD_DIR%\zephyr\zmk.uf2" (
-    copy /Y "%BUILD_DIR%\zephyr\zmk.uf2" "%ROOT%\out\%BOARD%.uf2" >nul
-    echo [build] %BOARD% -> out\%BOARD%.uf2
-) else (
+if not exist "%BUILD_DIR%\zephyr\zmk.uf2" (
     echo [build] %BOARD% built but no zmk.uf2 found at %BUILD_DIR%\zephyr\ 1>&2
+    echo [build] this usually means the previous build failed mid-way. 1>&2
+    echo [build] retry with: build.bat -p %BOARD:gamma_=% 1>&2
     exit /b 1
 )
+REM Sanity-check: real ZMK firmware is ~150-300 KB. Anything tiny is stale.
+for %%S in ("%BUILD_DIR%\zephyr\zmk.uf2") do set "UF2_SIZE=%%~zS"
+if %UF2_SIZE% LSS 10000 (
+    echo [build] %BOARD%: zmk.uf2 is only %UF2_SIZE% bytes — looks stale. 1>&2
+    echo [build] retry with: build.bat -p %BOARD:gamma_=% 1>&2
+    exit /b 1
+)
+copy /Y "%BUILD_DIR%\zephyr\zmk.uf2" "%ROOT%\out\%BOARD%.uf2" >nul
+echo [build] %BOARD% -> out\%BOARD%.uf2 ^(%UF2_SIZE% bytes^)
 exit /b 0
 
 
