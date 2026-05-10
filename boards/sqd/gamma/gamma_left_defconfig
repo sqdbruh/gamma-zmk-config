@@ -46,17 +46,21 @@ CONFIG_SENSOR=y
 # Halves have no USB so RTT is the only practical log channel.
 # Read with JLinkRTTViewer or `JLinkRTTLogger`.
 CONFIG_LOG=y
-# IMMEDIATE: every LOG_* call writes RTT inline, no worker thread.
-# Required when debugging early-boot crashes: a deferred buffer never
-# flushes if the panic happens before the log thread schedules.
-CONFIG_LOG_MODE_IMMEDIATE=y
+# Zephyr's software BLE link layer rejects LOG_MODE_IMMEDIATE (timing).
+# Use deferred mode with aggressive flushing + a panic-time flush.
+CONFIG_LOG_MODE_DEFERRED=y
+CONFIG_LOG_BUFFER_SIZE=8192
+CONFIG_LOG_PROCESS_THREAD_STARTUP_DELAY_MS=0
+CONFIG_LOG_PROCESS_THREAD_SLEEP_MS=10
+CONFIG_LOG_PROCESS_TRIGGER_THRESHOLD=1
 CONFIG_LOG_PRINTK=y
 CONFIG_ZMK_LOG_LEVEL_DBG=y
 CONFIG_USE_SEGGER_RTT=y
 CONFIG_LOG_BACKEND_RTT=y
 CONFIG_LOG_BACKEND_RTT_MODE_BLOCK=y
 CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
-# Route printk to RTT too, so kernel panic dumps surface.
+# RTT-backed console for printk (synchronous, bypasses log buffer) and
+# kernel panic dumps.
 CONFIG_RTT_CONSOLE=y
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_NAME=y
