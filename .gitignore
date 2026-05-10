@@ -1,6 +1,6 @@
-build/
-.west/
-zephyr/*
-!zephyr/module.yml
-modules/
-zmk/
+/build/
+/.west/
+/zephyr/*
+!/zephyr/module.yml
+/modules/
+/zmk/
