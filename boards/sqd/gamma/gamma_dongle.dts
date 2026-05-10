@@ -88,6 +88,19 @@
  */
 zephyr_udc0: &usbd {};
 
+/*
+ * The base gamma.dtsi defines a cdc_acm_uart child of &usbd for the
+ * console. With ZMK Studio enabled the studio-rpc-usb-uart snippet
+ * adds *its own* CDC-ACM endpoint (snippet_studio_rpc_usb_uart);
+ * leaving the console node enabled exposes a second COM port that
+ * Studio doesn't recognise — Windows shows both, neither connects.
+ * Drop the console endpoint on the dongle so only Studio's RPC one
+ * enumerates.
+ */
+&cdc_acm_uart {
+    status = "disabled";
+};
+
 &pwm0 {
 	status = "okay";
 	pinctrl-0 = <&pwm0_default>;
