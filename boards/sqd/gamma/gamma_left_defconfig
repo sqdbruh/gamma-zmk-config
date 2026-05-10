@@ -28,7 +28,7 @@ CONFIG_ZMK_BATTERY_REPORTING=y
 CONFIG_ZMK_BATTERY_REPORT_INTERVAL=60
 CONFIG_BT_BAS=y
 
-# Clock
+# Clock — nRF52 BLE controller requires an LF clock source.
 CONFIG_CLOCK_CONTROL=y
 CONFIG_CLOCK_CONTROL_NRF=y
 CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
@@ -41,31 +41,3 @@ CONFIG_SPI=y
 # I2C / sensors
 CONFIG_I2C=y
 CONFIG_SENSOR=y
-
-# --- DEBUG: SEGGER RTT logging via J-Link/SWD ---
-# Halves have no USB so RTT is the only practical log channel.
-# Read with JLinkRTTViewer or `JLinkRTTLogger`.
-CONFIG_LOG=y
-# Zephyr's software BLE link layer rejects LOG_MODE_IMMEDIATE (timing).
-# Use deferred mode with aggressive flushing + a panic-time flush.
-CONFIG_LOG_MODE_DEFERRED=y
-CONFIG_LOG_BUFFER_SIZE=8192
-CONFIG_LOG_PROCESS_THREAD_STARTUP_DELAY_MS=0
-CONFIG_LOG_PROCESS_THREAD_SLEEP_MS=10
-CONFIG_LOG_PROCESS_TRIGGER_THRESHOLD=1
-CONFIG_LOG_PRINTK=y
-CONFIG_ZMK_LOG_LEVEL_DBG=y
-CONFIG_USE_SEGGER_RTT=y
-CONFIG_LOG_BACKEND_RTT=y
-# DROP mode: if no host is reading RTT (SWD detached) the backend
-# discards messages instead of blocking the producer. With BLOCK mode
-# the firmware freezes the moment the up-buffer fills.
-CONFIG_LOG_BACKEND_RTT_MODE_DROP=y
-CONFIG_SEGGER_RTT_BUFFER_SIZE_UP=4096
-# Do NOT enable RTT_CONSOLE: it routes Zephyr's printk through
-# SEGGER_RTT_Write, which uses BLOCKING semantics under the hood
-# regardless of LOG_BACKEND_RTT_MODE. If JLink isn't draining the
-# buffer the printk caller hangs and the whole system stops with it.
-CONFIG_DEBUG_THREAD_INFO=y
-CONFIG_THREAD_NAME=y
-CONFIG_GAMMA_HALT_ON_FATAL=y

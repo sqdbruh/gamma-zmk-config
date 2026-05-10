@@ -4,11 +4,3 @@ config ZMK_CHECK_BATTERY_BEH
       When enabled the gamma board (or any board in this module) is
       expected to provide implementations of show_battery() and
       hide_battery(). When disabled the behavior compiles to no-ops.
-
-config GAMMA_HALT_ON_FATAL
-    bool "Halt on kernel fatal error instead of resetting"
-    help
-      Override k_sys_fatal_error_handler to spin in an infinite loop
-      after logging the panic, instead of rebooting into the
-      bootloader. Useful for capturing the fault site over RTT/SWD.
-      Should be left off in production firmware.
