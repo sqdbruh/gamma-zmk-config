@@ -5,7 +5,12 @@ manifest:
   projects:
     - name: zmk
       remote: zmkfirmware
-      revision: main
+      # Pinned to the exact ZMK commit this config was last verified
+      # against. Bumping main upstream breaks Studio + HWMv2 board
+      # plumbing in non-trivial ways every few weeks; pin so CI keeps
+      # producing working artifacts. See:
+      # https://zmk.dev/blog/2025/06/20/pinned-zmk
+      revision: ead91ca094c6cd778574f73b9ae011ddab611c66
       import: app/west.yml
   self:
     path: config
